@@ -10,10 +10,29 @@ class StudentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::all();
-        return view('students.index', compact('students'));
+        $search = $request->input('search');
+        $sortField = $request->input('sort', 'id'); // default sort column
+        $sortDirection = $request->input('direction', 'asc'); // default sort direction
+
+        $students = Student::query()
+            ->when($search, function ($query, $search) {
+                $query->where('student_id', 'like', "%{$search}%")
+                    ->orWhere('full_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('course_program', 'like', "%{$search}%")
+                    ->orWhere('year_level', 'like', "%{$search}%");
+            })
+            ->orderBy($sortField, $sortDirection)
+            ->paginate(10)
+            ->appends([
+                'search' => $search,
+                'sort' => $sortField,
+                'direction' => $sortDirection,
+            ]);
+
+        return view('students.index', compact('students', 'sortField', 'sortDirection'));
     }
 
     /**
@@ -53,7 +72,7 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        //
+        return response()->json($student);
     }
 
     /**
