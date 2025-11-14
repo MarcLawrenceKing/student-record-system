@@ -1,8 +1,8 @@
 @extends('layout')
 
 @section('content')
-<div class="container d-flex flex-column justify-content-center align-items-center pt-5">
-  <h1 class="pb-3">Edit Student</h1>
+<div class="container d-flex flex-column justify-content-center align-items-center pt-5 mb-5">
+    <h1 class="pb-3">Edit Student</h1>
 
   <form action="{{ route('students.update', $student) }}" method="POST" class="w-50 space-y-2">
     @csrf

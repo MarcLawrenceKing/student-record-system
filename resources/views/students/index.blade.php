@@ -12,8 +12,8 @@
   @else
   <!-- Show this if $variable has a value -->
   <!-- search -->
-  <div class="w-100 d-flex justify-content-start mb-3">
-    <form action="{{ route('students.index') }}" method="GET" role="search" class="d-flex w-100">
+  <div class="w-100 d-flex justify-content-between mb-3">
+    <form action="{{ route('students.index') }}" method="GET" role="search" class="d-flex">
       <input
         type="text"
         name="search"
@@ -23,11 +23,26 @@
       >
       <button class="btn btn-outline-primary" type="submit">Search</button>
     </form>
+    <div class="d-flex gap-2">
+      <a class="btn btn-warning" href="/students/create"><i class="bi bi-person-plus-fill"></i>Add Student</a>
+
+      <form id="bulkDeleteForm" action="{{ route('students.bulkDelete') }}" method="POST">
+        @csrf
+        @method('DELETE')
+
+        <button type="submit" id="deleteSelectedBtn" class="btn btn-danger" disabled>
+          <i class="bi bi-trash"></i> Delete Selected
+        </button>
+      </form>
+    </div>
   </div>
 
-  <table class="table text-start align-center">
+  <table class="table text-start align-middle">
     <thead>
       <tr>
+        <th>
+          <input type="checkbox" id="selectAll" class="form-check-input form-check-input-lg">
+        </th>
         <th scope="col">
           <a href="{{ route('students.index', ['sort' => 'student_id', 'direction' => ($sortField === 'student_id' && $sortDirection === 'asc') ? 'desc' : 'asc', 'search' => request('search')]) }}" class>
             ID {!! $sortField === 'student_id' ? ($sortDirection === 'asc' ? '&#9650;' : '&#9660;') : '' !!}
@@ -53,27 +68,19 @@
             Year & Level {!! $sortField === 'year_level' ? ($sortDirection === 'asc' ? '&#9650;' : '&#9660;') : '' !!}
           </a>
         </th>
-        <th scope="col">Action</th>
       </tr>
     </thead>
     <tbody>
       @foreach($students as $student)
       <tr class="student-row" data-id="{{ $student->id }}">
+        <td>
+          <input type="checkbox" class="student-checkbox form-check-input form-check-input-lg" name="ids[]" value="{{ $student->id }}" form="bulkDeleteForm">
+        </td>
         <th scope="row">{{ $student->student_id }}</th>
         <td>{{ $student->full_name }}</td>
         <td>{{ $student->email }}</td>
         <td>{{ $student->course_program }}</td>
         <td>{{ $student->year_level }}</td>
-        <td>
-          <a class="btn btn-primary" href="{{ route('students.edit', $student) }}"><i class="bi bi-pencil-square"></i>
-          </a>
-          <form action="{{ route('students.destroy', $student) }}" method="POST" style="display:inline;">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn-danger" type="submit"><i class="bi bi-trash"></i>
-            </button>
-          </form>
-        </td>
       </tr>
       @endforeach
 
@@ -85,38 +92,41 @@
     {{ $students->links() }}
   </div>
 
-  @include('students.modals.view')
-
 </div>
 
-
-@endsection
-
-
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll('.student-row').forEach(row => {
-    row.addEventListener('click', function (e) {
-      // Ignore clicks on the Action buttons
-      if (e.target.closest('a') || e.target.closest('form') || e.target.closest('button')) return;
+  // script to view a student and select checkbox to delete
+  document.addEventListener('DOMContentLoaded', function () {
 
-      const studentId = this.dataset.id;
+    const checkboxes = document.querySelectorAll('.student-checkbox');
+    const selectAll = document.getElementById('selectAll');
+    const deleteBtn = document.getElementById('deleteSelectedBtn');
 
-      fetch(`/students/${studentId}`)
-        .then(response => response.json())
-        .then(student => {
-          document.getElementById('view_student_id').textContent = student.student_id;
-          document.getElementById('view_full_name').textContent = student.full_name;
-          document.getElementById('view_date_of_birth').textContent = student.date_of_birth;
-          document.getElementById('view_gender').textContent = student.gender;
-          document.getElementById('view_email').textContent = student.email;
-          document.getElementById('view_course_program').textContent = student.course_program;
-          document.getElementById('view_year_level').textContent = student.year_level;
-
-          const modal = new bootstrap.Modal(document.getElementById('viewStudentModal'));
-          modal.show();
-        });
+    // Row click redirect (VIEW)
+    document.querySelectorAll('.student-row').forEach(row => {
+      row.addEventListener('click', function (e) {
+        if (e.target.matches('.student-checkbox')) return; // ignore checkbox clicks
+        let studentId = this.dataset.id;
+        window.location.href = `/students/${studentId}`;
+      });
     });
+
+    // Select All checkbox
+    selectAll.addEventListener('change', function () {
+      checkboxes.forEach(cb => cb.checked = selectAll.checked);
+      updateDeleteButton();
+    });
+
+    // Update when individual checkboxes change
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', updateDeleteButton);
+    });
+
+    function updateDeleteButton() {
+      const anyChecked = [...checkboxes].some(cb => cb.checked);
+      deleteBtn.disabled = !anyChecked;
+    }
+
   });
-});
 </script>
+@endsection

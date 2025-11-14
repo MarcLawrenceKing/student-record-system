@@ -13,7 +13,7 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $sortField = $request->input('sort', 'id'); // default sort column
+        $sortField = $request->input('sort', 'student_id'); // default sort column
         $sortDirection = $request->input('direction', 'asc'); // default sort direction
 
         $students = Student::query()
@@ -72,7 +72,7 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        return response()->json($student);
+        return view('students.show', compact('student'));
     }
 
     /**
@@ -109,12 +109,24 @@ class StudentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Student $student)
-    {
-        // delete the stored id
-        $student->delete();
+    // public function destroy(Student $student)
+    // {
+    //     // delete the stored id
+    //     $student->delete();
 
-        // redirect to student.index
-        return redirect()->route('students.index');
+    //     // redirect to student.index
+    //     return redirect()->route('students.index');
+    // }
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids;
+
+        if (!$ids) {
+            return back()->with('error', 'No students selected.');
+        }
+
+        Student::whereIn('id', $ids)->delete();
+
+        return back()->with('success', 'Selected students deleted successfully.');
     }
 }

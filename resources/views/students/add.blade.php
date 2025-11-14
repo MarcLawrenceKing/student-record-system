@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-<div class="container d-flex flex-column justify-content-center align-items-center pt-5 mb-4">
+<div class="container d-flex flex-column justify-content-center align-items-center pt-5 mb-5">
   <h1 class="pb-3">Add Student</h1>
 
   <form action="{{ route('students.store') }}" method="POST" class="w-50 space-y-2">
@@ -86,7 +86,7 @@
       <button type="submit" class="btn btn-outline-success">Save</button>
     </div>
 
-
+    
   </form>
 
 </div>
