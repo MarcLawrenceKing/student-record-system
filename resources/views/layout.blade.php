@@ -19,7 +19,7 @@
 <body style="min-height: 100vh; display:flex; flex-direction:column;">
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/students">Student Record System</a>
+      <a class="navbar-brand" href="/students">SRS</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -52,6 +52,8 @@
     </div>
   </nav>
   @yield('content')
+  @include('modals.confirmation')
+  @include('toast')
   <footer class="text-center py-3 border-top" style="bottom:0; width:100%; margin-top: auto;">
     <div class="container">
       <p>&copy; 2025 Goldplan Insurance Services. All Rights Reserved</p>
@@ -72,6 +74,75 @@
     document.documentElement.setAttribute('data-bs-theme', newTheme);
     localStorage.setItem('theme', newTheme);
   }
+</script>
+
+<script>
+  // script for confirmation modal
+  document.addEventListener("DOMContentLoaded", function () {
+
+    let formToSubmit = null;
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    const header = document.getElementById("confirmHeader");
+    const title = document.getElementById("confirmTitle");
+    const messageBox = document.getElementById("confirmMessage");
+    const yesBtn = document.getElementById("confirmYesBtn");
+
+    document.querySelectorAll("button[data-confirm]").forEach(btn => {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        formToSubmit = btn.closest("form");
+        const actionType = btn.getAttribute("data-confirm"); // delete/add/update
+
+        // Remove previous color classes
+        header.className = "modal-header"; 
+        yesBtn.className = "btn";
+
+        // Change text based on action
+        switch (actionType) {
+          case "delete":
+            header.classList.add("bg-danger", "text-white");
+            title.textContent = "Confirm Delete";
+            yesBtn.classList.add("btn-danger");
+            messageBox.textContent = "Are you sure you want to delete the student/s?";
+            break;
+          case "add":
+            header.classList.add("bg-success", "text-white");
+            title.textContent = "Confirm Add";
+            yesBtn.classList.add("btn-success");
+            messageBox.textContent = "Are you sure you want to add this student?";
+            break;
+          case "update":
+            header.classList.add("bg-primary", "text-white");
+            title.textContent = "Confirm Update";
+            yesBtn.classList.add("btn-primary");
+            messageBox.textContent = "Are you sure you want to save changes?";
+            break;
+          default:
+            header.classList.add("bg-secondary", "text-white");
+            title.textContent = "Please Confirm";
+            yesBtn.classList.add("btn-secondary");
+            messageBox.textContent = "Are you sure you want to continue?";
+        }
+          confirmModal.show();
+        });
+    });
+
+    yesBtn.addEventListener("click", function () {
+        if (formToSubmit) formToSubmit.submit();
+    });
+  });
+</script>
+
+<script>
+  // script for toast
+  document.addEventListener("DOMContentLoaded", function () {
+    const toastEl = document.getElementById('successToast');
+    if (toastEl) {
+      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+      toast.show();
+    }
+  });
 </script>
 
 </html>

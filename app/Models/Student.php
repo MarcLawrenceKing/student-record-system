@@ -18,4 +18,5 @@ class Student extends Model
         'email',
         'course_program',
         'year_level',
+        'image',
     ];}
