@@ -8,6 +8,14 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->middleware('guest');
 
+Route::get('/test-scheme', function (Illuminate\Http\Request $request) {
+    return [
+        'laravel_thinks_https' => $request->isSecure(),
+        'scheme' => $request->getScheme(),
+        'forwarded_proto' => $request->header('X-Forwarded-Proto'),
+    ];
+});
+
 // Authenticated user routes
 Route::middleware('auth')->group(function () {
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
