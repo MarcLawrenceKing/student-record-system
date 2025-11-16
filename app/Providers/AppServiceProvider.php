@@ -23,6 +23,11 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
+
+            // Force Symfony request to detect HTTPS
+            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+                $_SERVER['HTTPS'] = 'on';
+            }
         }
     }
 }
