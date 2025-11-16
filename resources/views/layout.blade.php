@@ -16,7 +16,7 @@
   </script>
 </head>
 
-<body style="min-height: 100vh; display:flex; flex-direction:column;">
+<body style="">
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <a class="navbar-brand" href="/students">SRS</a>
@@ -54,11 +54,6 @@
   @yield('content')
   @include('modals.confirmation')
   @include('toast')
-  <footer class="text-center py-3 border-top" style="bottom:0; width:100%; margin-top: auto;">
-    <div class="container">
-      <p>&copy; 2025 Goldplan Insurance Services. All Rights Reserved</p>
-    </div>
-  </footer>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
