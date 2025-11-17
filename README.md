@@ -16,8 +16,8 @@ It demonstrates full CRUD operations, table sorting/searching across the entire 
 1. **Light Mode / Dark Mode Toggle**  
 2. **CRUD Operations** with server-side validation  
 3. **Batch Upload of Students** (CSV)  
-4. **Global Table Sorting** 
-5. **Global Table Search**
+4. **Global Table Search & Sorting** 
+5. **Toast Notifications**
 6. **Laravel Breeze Authentication** (Login + Logout only)  
 7. **AWS S3 Image Storage** for student profile images  
 8. **Mobile Responsive**
