@@ -104,6 +104,41 @@ class StudentController extends Controller
         while (($row = fgetcsv($handle)) !== false) {
             $data = array_combine($header, $row);
 
+            /* ----------------------------------------
+            * 1) NORMALIZE DATE BEFORE VALIDATION
+            * ---------------------------------------- */
+            $date = trim($data['date_of_birth']);
+
+            $formats = [
+                'Y-m-d',   // original CSV
+                'Y/m/d',   // Excel sometimes converts to this
+                'm/d/Y',   // Excel US locale
+                'd/m/Y',   // Excel PH locale
+            ];
+
+            $parsed = null;
+
+            foreach ($formats as $format) {
+                try {
+                    $parsed = \Carbon\Carbon::createFromFormat($format, $date);
+                    break;
+                } catch (\Exception $e) {
+                    // continue trying next format
+                }
+            }
+
+            // If date can't be parsed
+            if (!$parsed) {
+                $invalidRecords[] = [
+                    'data' => $data,
+                    'errors' => ["Invalid date format: '{$data['date_of_birth']}' — use YYYY-MM-DD"],
+                ];
+                continue;
+            }
+
+            // Convert to valid SQL format
+            $data['date_of_birth'] = $parsed->format('Y-m-d');
+
             // Validate each row manually
             $validator = Validator::make($data, [
                 'student_id' => 'required|string|max:255|unique:students,student_id',

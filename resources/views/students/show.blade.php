@@ -37,8 +37,11 @@
             <!-- Date of Birth -->
             <div class="col-12 col-md-6">
                 <div class="form-floating">
-                    <input type="date" class="form-control" id="dateOfBirth"
-                        value="{{ $student->date_of_birth }}" readonly>
+                    <input type="text" 
+                        class="form-control" 
+                        id="dateOfBirth"
+                        value="{{ \Carbon\Carbon::parse($student->date_of_birth)->format('F j, Y') }}"
+                        readonly>
                     <label for="dateOfBirth">Date of Birth</label>
                 </div>
             </div>

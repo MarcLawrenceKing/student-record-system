@@ -16,7 +16,7 @@
   <!-- Show this if $variable has a value -->
   <!-- search -->
   <div class="w-100 d-flex flex-column flex-md-row justify-content-between mb-3 gap-2">
-    <form action="{{ url()->secure(route('students.index')) }}" method="GET" role="search" class="d-flex w-100 ">
+    <form action="{{ route('students.index') }}" method="GET" role="search" class="d-flex w-100 ">
       <div class="input-group">
         <input
           type="text"
