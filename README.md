@@ -114,7 +114,7 @@ php artisan db:seed
 ```bash
 php artisan serve
 ```
-## ✅ 4. Screenshots
+## ✅ 5. Screenshots
 
 <img src="Screenshot 2025-11-17 115916.png" width="400">
 <img src="Screenshot 2025-11-17 115937.png" width="400">
