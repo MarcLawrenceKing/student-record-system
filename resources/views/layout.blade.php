@@ -57,7 +57,7 @@
   @include('toast')
   <footer class="text-center py-3 border-top" style="bottom:0; width:100%; margin-top: auto;">
     <div class="container">
-      <p>&copy; 2025 Goldplan Insurance Services. All Rights Reserved</p>
+      <p>&copy; 2025 Marc Lawrence King. All Rights Reserved</p>
     </div>
   </footer>
 </body>

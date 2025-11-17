@@ -1,59 +1,119 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Student Record System - CRUD Assessment Project
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## ✅ 1. Project Overview
 
-## About Laravel
+This project is a **basic Student Record Management System**.  
+It demonstrates full CRUD operations, table sorting/searching across the entire dataset, and image handling.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+🔗 **Live Demo:** *https://student-record-system.up.railway.app/*
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## ✅ 2. Features
 
-## Learning Laravel
+### Application Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+1. **Light Mode / Dark Mode Toggle**  
+2. **CRUD Operations** with server-side validation  
+3. **Batch Upload of Students** (CSV)  
+4. **Global Table Sorting** 
+5. **Global Table Search**
+6. **Laravel Breeze Authentication** (Login + Logout only)  
+7. **AWS S3 Image Storage** for student profile images  
+8. **Mobile Responsive**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Student Table Schema
 
-## Laravel Sponsors
+The system manages a single table: **students**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Name           | Data Type         | Description                  |
+|----------------|-------------------|------------------------------|
+| id             | Int (auto)        | Primary key                  |
+| student_id     | String (unique)   | Unique student identifier    |
+| full_name      | String            | Student's full name          |
+| date_of_birth  | Date              | Student's birth date         |
+| gender         | Enum              | Male, Female, or Other       |
+| email          | String (unique)   | Student's email address      |
+| course_program | String            | Program or course enrolled   |
+| year_level     | String            | Year level of the student    |
+| image          | String            | Profile image filename/path  |
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## ✅ 3. Tech Stack
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **Laravel** (backend + authentication)  
+- **Bootstrap** (UI)  
+- **MySQL** (database)  
+- **AWS S3** (image storage)  
+- **Railway** (deployment of Laravel app + MySQL database)
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## ✅ 4. Installation / Setup
 
-## Security Vulnerabilities
+### Requirements
+- **PHP >= 8.1**
+- **Composer**
+- **MySQL**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 1. Clone the repository
+```bash
+git clone https://github.com/MarcLawrenceKing/student-record-system.git
+cd student-record-system
+```
+### 2. Install PHP dependencies
+```bash
+composer install
+```
 
-## License
+### 3. Create environment file
+```bash
+cp .env.example .env
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 4. Configure `.env`
+Update the following lines with your local database credentials:
+```env
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_mysql_username
+DB_PASSWORD=your_mysql_password
+```
+If using AWS S3 locally:
+```env
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_DEFAULT_REGION=ap-southeast-1
+AWS_BUCKET=your_bucket_name
+```
+
+### 5. Generate application key
+```bash
+php artisan key:generate
+```
+
+### 6. Run migrations (to create database based on DB_DATABASE)
+```bash
+php artisan migrate
+```
+
+### 7. Start the development server
+```bash
+php artisan serve
+```
+## ✅ 4. Screenshots
+
+<img src="Screenshot 2025-11-17 115916.png" width="400">
+<img src="Screenshot 2025-11-17 115937.png" width="400">
+<img src="Screenshot 2025-11-17 115957.png" width="400">
+<img src="Screenshot 2025-11-17 120006.png" width="400">
+<img src="Screenshot 2025-11-17 120102.png" width="400">
+<img src="Screenshot 2025-11-17 120112.png" width="400">
+
+
