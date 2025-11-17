@@ -63,9 +63,11 @@ The system manages a single table: **students**
 git clone https://github.com/MarcLawrenceKing/student-record-system.git
 cd student-record-system
 ```
-### 2. Install PHP dependencies
+### 2. Install PHP & Node dependencies
 ```bash
 composer install
+npm install
+npm run build
 ```
 
 ### 3. Create environment file
@@ -85,11 +87,11 @@ DB_DATABASE=your_database_name
 DB_USERNAME=your_mysql_username
 DB_PASSWORD=your_mysql_password
 ```
-If using AWS S3 locally:
+If you want to implement student image feature (optional):
 ```env
 AWS_ACCESS_KEY_ID=your_key
 AWS_SECRET_ACCESS_KEY=your_secret
-AWS_DEFAULT_REGION=ap-southeast-1
+AWS_DEFAULT_REGION=your_region
 AWS_BUCKET=your_bucket_name
 ```
 
@@ -103,7 +105,12 @@ php artisan key:generate
 php artisan migrate
 ```
 
-### 7. Start the development server
+### 7. Seed an user (to be able to login -> check DatabaseSeeder file to access/modify credentials)
+```bash
+php artisan db:seed
+```
+
+### 8. Start the development server
 ```bash
 php artisan serve
 ```
