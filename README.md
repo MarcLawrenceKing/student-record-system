@@ -5,8 +5,6 @@
 This project is a **basic Student Record Management System**.  
 It demonstrates full CRUD operations, table sorting/searching across the entire dataset, and image handling.
 
-🔗 **Live Demo:** *https://student-record-system.up.railway.app/*
-
 ---
 
 ## ✅ 2. Features
