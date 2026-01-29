@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Enrollment;
+use App\Models\SummaryEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -73,6 +74,9 @@ class EnrollmentController extends Controller
 
         Enrollment::create($validated);
 
+        // Update grades_email
+        $this->updateGradesEmail($validated['student_id'], $validated['year_sem']);
+
         return redirect()->route('enrollments.index')->with('success', 'Enrollment added successfully!');
     }
 
@@ -101,10 +105,14 @@ class EnrollmentController extends Controller
         $invalidRecords = [];
 
         while (($row = fgetcsv($handle)) !== false) {
+
+            // Pad the row with nulls if it's shorter than the header
+            $row = array_pad($row, count($header), null);
+
             $data = array_combine($header, $row);
 
             $validator = Validator::make($data, [
-                'student_id' => 'required|exists:students,student_id',
+                'student_id' => 'required|exists:students,id',
                 'subject_code' => 'required|string|max:255',
                 'year_sem' => 'required|string|max:255',
                 'grade' => 'nullable|string|max:5',
@@ -120,10 +128,22 @@ class EnrollmentController extends Controller
             }
         }
 
+
         fclose($handle);
+
+        $affectedCombos = [];
 
         foreach ($validRecords as $record) {
             Enrollment::create($record);
+
+            // Track affected student/year_sem
+            $key = $record['student_id'].'-'.$record['year_sem'];
+            $affectedCombos[$key] = ['student_id' => $record['student_id'], 'year_sem' => $record['year_sem']];
+        }
+
+        // Update grades_email for all affected combos
+        foreach ($affectedCombos as $combo) {
+            $this->updateGradesEmail($combo['student_id'], $combo['year_sem']);
         }
 
         if (count($invalidRecords) === 0) {
@@ -156,16 +176,26 @@ class EnrollmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Student $student)
+    public function update(Request $request, Enrollment $enrollment)
     {
         $validated = $request->validate([
-            'student_id' => 'required|exists:students,student_id',
             'subject_code' => 'required|string|max:255',
             'year_sem' => 'required|string|max:255',
             'grade' => 'nullable|string|max:5',
         ]);
 
         $enrollment->update($validated);
+
+        // Update grades_email
+        $oldYearSem = $enrollment->year_sem;
+
+        $enrollment->update($validated);
+
+        // Update old summary
+        $this->updateGradesEmail($enrollment->student_id, $oldYearSem);
+
+        // Update new summary
+        $this->updateGradesEmail($enrollment->student_id, $validated['year_sem']);
 
         return redirect()->route('enrollments.index')->with('success', 'Enrollment updated successfully!');
     }
@@ -181,8 +211,44 @@ class EnrollmentController extends Controller
             return back()->with('error', 'No enrollments selected.');
         }
 
+        $affectedCombos = Enrollment::whereIn('id', $ids)
+            ->get(['student_id', 'year_sem'])
+            ->unique(function ($item) {
+                return $item->student_id.'-'.$item->year_sem;
+            });
+
         Enrollment::whereIn('id', $ids)->delete();
+
+        // Update grades_email for all affected combos
+        foreach ($affectedCombos as $combo) {
+            $this->updateGradesEmail($combo->student_id, $combo->year_sem);
+        }
 
         return back()->with('success', 'Selected enrollments deleted successfully.');
     }
+
+    // Helper to update grades_email
+    private function updateGradesEmail($student_id, $year_sem)
+    {
+        $enrollments = Enrollment::where('student_id', $student_id)
+            ->where('year_sem', $year_sem)
+            ->get();
+
+        $subject_count = $enrollments->count();
+        $subject_with_grades = $enrollments->whereNotNull('grade')->count();
+        $average_grades = $subject_with_grades > 0 
+            ? $enrollments->whereNotNull('grade')->avg('grade') 
+            : 0;
+
+        SummaryEmail::updateOrCreate(
+            ['student_id' => $student_id, 'year_sem' => $year_sem],
+            [
+                'subject_count' => $subject_count,
+                'subject_with_grades' => $subject_with_grades,
+                'average_grades' => $average_grades,
+                'sent' => false
+            ]
+        );
+    }
+
 }

@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/summary_emails/{summary_email}', [SummaryEmailController::class, 'update'])->name('summary_emails.update');
     //Route::delete('/summary_emails/{summary_email}', [SummaryEmailController::class, 'destroy'])->name('summary_emails.destroy');
     Route::delete('/summary_emails/bulk-delete', [SummaryEmailController::class, 'bulkDelete'])->name('summary_emails.bulkDelete');
+    Route::post('/summary_emails/bulk-send', [SummaryEmailController::class, 'bulkSend'])->name('summary_emails.bulkSend');
 
 });
 

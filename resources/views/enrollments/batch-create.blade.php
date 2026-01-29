@@ -3,17 +3,17 @@
 @section('content')
 <div class="container pt-4 px-2">
 
-    <h2 class="mb-4 text-center">Batch Upload Students</h2>
+    <h2 class="mb-4 text-center">Batch Upload Enrollments</h2>
 
     {{-- Download template --}}
     <div class="mb-3 d-flex justify-content-start">
-        <a href="{{ asset('templates/student_template.csv') }}" class="btn btn-secondary w-100 w-sm-auto">
+        <a href="{{ asset('templates/enrollment_template.csv') }}" class="btn btn-secondary w-100 w-sm-auto">
             Download CSV Template
         </a>
     </div>
 
     {{-- Upload Form --}}
-    <form action="{{ route('students.batch.store') }}" method="POST" enctype="multipart/form-data" class="border p-4 rounded shadow-sm w-100 w-md-75 w-lg-50 mx-auto mb-4">
+    <form action="{{ route('enrollments.batch.store') }}" method="POST" enctype="multipart/form-data" class="border p-4 rounded shadow-sm w-100 w-md-75 w-lg-50 mx-auto mb-4">
         @csrf
 
         <div class="mb-3">
@@ -25,7 +25,7 @@
         </div>
 
         <div class="d-flex flex-column flex-sm-row gap-3 mt-4 justify-content-end">
-            <a href="{{ route('students.index') }}" class="btn btn-outline-secondary">Back</a>
+            <a href="{{ route('enrollments.index') }}" class="btn btn-outline-secondary">Back</a>
             <button type="submit" class="btn btn-primary w-sm-auto">Upload</button>
         </div>
         

@@ -32,13 +32,20 @@
       </div>
     </form>
     <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-sm-auto">
-      <a class="btn btn-primary w-100 w-sm-auto" href="/summary_emails/create"><i class="bi bi-person-plus-fill"></i> Add summary_email</a>
+      <!-- <a class="btn btn-primary w-100 w-sm-auto" href="/summary_emails/create"><i class="bi bi-person-plus-fill"></i> Add summary email</a> -->
       <form id="bulkDeleteForm" action="{{ route('summary_emails.bulkDelete') }}" method="POST" class="w-100 w-sm-auto">
         @csrf
         @method('DELETE')
 
         <button type="submit" data-confirm="delete" id="deleteSelectedBtn" class="btn btn-danger w-100 w-sm-auto" disabled>
           <i class="bi bi-trash"></i> Delete Selected
+        </button>
+      </form>
+      <form id="bulkSendForm" action="{{ route('summary_emails.bulkSend') }}" method="POST" class="w-100 w-sm-auto">
+        @csrf
+
+        <button type="submit" id="sendSelectedBtn" class="btn btn-success w-100 w-sm-auto" disabled>
+          <i class="bi bi-envelope"></i> Send Email to Selected
         </button>
       </form>
     </div>
@@ -92,7 +99,7 @@
         @foreach($summary_emails as $summary_email)
         <tr class="summary_email-row" data-id="{{ $summary_email->id }}">
           <td>
-            <input type="checkbox" class="summary_email-checkbox form-check-input form-check-input-lg" name="ids[]" value="{{ $summary_email->id }}" form="bulkDeleteForm">
+            <input type="checkbox" class="summary_email-checkbox form-check-input form-check-input-lg" name="ids[]" value="{{ $summary_email->id }}" form="bulkDeleteForm bulkSendForm">
           </td>
           <th scope="row">{{ $summary_email->id }}</th>
           <td>
@@ -121,16 +128,16 @@
   // script to view a student and select checkbox to delete
   document.addEventListener('DOMContentLoaded', function () {
 
-    const checkboxes = document.querySelectorAll('.student-checkbox');
+    const checkboxes = document.querySelectorAll('.summary_email-checkbox');
     const selectAll = document.getElementById('selectAll');
     const deleteBtn = document.getElementById('deleteSelectedBtn');
 
     // Row click redirect (VIEW)
-    document.querySelectorAll('.student-row').forEach(row => {
+    document.querySelectorAll('.summary_email-row').forEach(row => {
       row.addEventListener('click', function (e) {
-        if (e.target.matches('.student-checkbox')) return; // ignore checkbox clicks
-        let studentId = this.dataset.id;
-        window.location.href = `/summary_emails/${studentId}`;
+        if (e.target.matches('.summary_email-checkbox')) return; // ignore checkbox clicks
+        let summary_emailId = this.dataset.id;
+        window.location.href = `/summary_emails/${summary_emailId}`;
       });
     });
 
@@ -150,6 +157,24 @@
       deleteBtn.disabled = !anyChecked;
     }
 
+  });
+
+  // for send email
+  const sendBtn = document.getElementById('sendSelectedBtn');
+
+  function updateButtons() {
+    const anyChecked = [...checkboxes].some(cb => cb.checked);
+    deleteBtn.disabled = !anyChecked;
+    sendBtn.disabled = !anyChecked;
+  }
+
+  selectAll.addEventListener('change', function () {
+    checkboxes.forEach(cb => cb.checked = selectAll.checked);
+    updateButtons();
+  });
+
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', updateButtons);
   });
 </script>
 @endsection

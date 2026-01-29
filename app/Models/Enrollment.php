@@ -11,7 +11,6 @@ class Enrollment extends Model
 
     // these are the properties of a enrollment
     protected $fillable = [
-        'id',
         'student_id',
         'subject_code',
         'year_sem',

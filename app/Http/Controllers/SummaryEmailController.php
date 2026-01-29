@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\SummaryEmail;
+use App\Models\Enrollment;
+use App\Mail\GradesSummaryMail;
+use Illuminate\Support\Facades\Mail;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -95,5 +99,49 @@ class SummaryEmailController extends Controller
     public function bulkDelete(Request $request)
     {
 
+    }
+
+    public function bulkSend(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+        ]);
+
+        $summaryEmails = SummaryEmail::with('student')
+            ->whereIn('id', $request->ids)
+            ->where('subject_with_grades', 5)
+            ->where('sent', false)
+            ->get();
+
+        foreach ($summaryEmails as $summary) {
+
+            $student = $summary->student;
+
+            // fetch enrollments with grades
+            $enrollments = Enrollment::with('subject')
+                ->where('student_id', $student->id)
+                ->where('year_sem', $summary->year_sem)
+                ->whereNotNull('grade')
+                ->get();
+
+            if ($enrollments->count() !== 5) {
+                continue; // safety check
+            }
+
+            Mail::to($student->email)->send(
+                new GradesSummaryMail(
+                    student: $student,
+                    yearSem: $summary->year_sem,
+                    enrollments: $enrollments,
+                    average: $summary->average_grades
+                )
+            );
+
+            $summary->update(['sent' => true]);
+        }
+
+        return redirect()
+            ->route('summary_emails.index')
+            ->with('success', 'Emails sent successfully.');
     }
 }

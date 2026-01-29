@@ -14,7 +14,6 @@ class SummaryEmail extends Model
 
     // these are the properties of a enrollment
     protected $fillable = [
-        'id',
         'student_id',
         'year_sem',
         'subject_count',
