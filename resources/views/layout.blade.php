@@ -27,7 +27,30 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-              <a href="{{ route('logout') }}" class="nav-link" 
+              <a href="/students" class="nav-link {{ request()->is('students*') ? 'active' : '' }}">
+                  Students
+              </a>
+          </li>
+
+          <li class="nav-item">
+              <a href="/subjects" class="nav-link {{ request()->is('subjects*') ? 'active' : '' }}">
+                  Subjects
+              </a>
+          </li>
+          <li class="nav-item">
+              <a href="/enrollments" class="nav-link {{ request()->is('enrollments*') ? 'active' : '' }}">
+                  Enrollments
+              </a>
+          </li>
+
+          <li class="nav-item">
+              <a href="/summary_emails" class="nav-link {{ request()->is('summary-emails*') ? 'active' : '' }}">
+                  Summary Emails
+              </a>
+          </li>
+
+          <li class="nav-item">
+              <a href="{{ route('logout') }}" class="nav-link"
                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                   Log out
               </a>
