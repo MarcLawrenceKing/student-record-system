@@ -3,7 +3,7 @@
 ## ✅ 1. Project Overview
 
 This project is a **basic Student Record Management System**.  
-It demonstrates full CRUD operations, table sorting/searching across the entire dataset, and image handling.
+It demonstrates full CRUD operations, table sorting/searching across the entire dataset, image handling, and automated summary email generation for students.
 
 ---
 
@@ -19,37 +19,100 @@ It demonstrates full CRUD operations, table sorting/searching across the entire 
 6. **Laravel Breeze Authentication** (Login + Logout only)  
 7. **AWS S3 Image Storage** for student profile images  
 8. **Mobile Responsive**
-
-### Student Table Schema
-
-The system manages a single table: **students**
-
-| Name           | Data Type         | Description                  |
-|----------------|-------------------|------------------------------|
-| id             | Int (auto)        | Primary key                  |
-| student_id     | String (unique)   | Unique student identifier    |
-| full_name      | String            | Student's full name          |
-| date_of_birth  | Date              | Student's birth date         |
-| gender         | Enum              | Male, Female, or Other       |
-| email          | String (unique)   | Student's email address      |
-| course_program | String            | Program or course enrolled   |
-| year_level     | String            | Year level of the student    |
-| image          | String            | Profile image filename/path  |
-
+9. **Manage Enrollments & Subjects** for each student  
+10. **Automatic Average Grade Calculation**  
+11. **Send Summary Email** once a student has 5 subjects with grades  
 
 ---
 
-## ✅ 3. Tech Stack
+### Database Tables
+
+#### Students Table
+
+| Name           | Data Type         | Description                  |
+|----------------|-----------------|------------------------------|
+| id             | Int (auto)       | Primary key                  |
+| student_id     | String (unique)  | Unique student identifier    |
+| full_name      | String           | Student's full name          |
+| date_of_birth  | Date             | Student's birth date         |
+| gender         | Enum             | Male, Female, or Other       |
+| email          | String (unique)  | Student's email address      |
+| course_program | String           | Program or course enrolled   |
+| year_level     | String           | Year level of the student    |
+| image          | String           | Profile image filename/path  |
+| created_at     | Timestamp        | Record creation time         |
+| updated_at     | Timestamp        | Record last update time      |
+
+#### Subjects Table
+
+| Name          | Data Type       | Description                  |
+|---------------|----------------|------------------------------|
+| id            | Bigint (auto)  | Primary key                  |
+| subject_code  | Varchar(20)    | Unique code for the subject  |
+| subject_name  | Varchar(100)   | Name of the subject          |
+| created_at    | Timestamp      | Record creation time         |
+| updated_at    | Timestamp      | Record last update time      |
+
+#### Enrollments Table
+
+| Name         | Data Type       | Description                                |
+|--------------|----------------|--------------------------------------------|
+| id           | Bigint (auto)  | Primary key                                |
+| student_id   | Bigint (FK)    | References `students.id`                   |
+| subject_code | Varchar(20)    | Code of the enrolled subject               |
+| year_sem     | Varchar(20)    | Year & semester of enrollment              |
+| grade        | Decimal(5,2)   | Grade for the subject (nullable)           |
+| created_at   | Timestamp      | Record creation time                        |
+| updated_at   | Timestamp      | Record last update time                     |
+
+#### Grades Email Table (summary emails)
+
+| Name               | Data Type      | Description                                         |
+|--------------------|---------------|-----------------------------------------------------|
+| id                 | Bigint (auto) | Primary key                                        |
+| student_id         | Bigint (FK)   | References `students.id`                           |
+| year_sem           | Varchar(20)   | Year & semester                                    |
+| subject_count      | Tinyint       | Total subjects enrolled                             |
+| subject_with_grades| Tinyint       | Subjects with grades assigned                       |
+| average_grades     | Decimal(5,2)  | Average of all grades (nullable)                    |
+| sent               | Boolean       | Whether summary email has been sent                |
+| created_at         | Timestamp     | Record creation time                                |
+| updated_at         | Timestamp     | Record last update time                             |
+
+---
+
+## ✅ 3. Business Logic & Validation
+
+### Enrollments
+
+- Full CRUD available (create, read, edit, delete)  
+- Batch upload feature using CSV template  
+- **Validation:** A student cannot be enrolled in the same subject for the same year/semester  
+
+### Summary Emails / Grades Email
+
+- Computed automatically based on enrollments  
+- **Validation:** Emails can only be sent if a student has **5 subjects with grades**  
+- Average grade is calculated automatically  
+- Mailtrap sandbox used for testing (requires `.env` setup)  
+
+### Subjects
+
+- Subjects do not have CRUD operations (managed manually for demonstration)  
+- Included in navigation for reference  
+
+---
+
+## ✅ 4. Tech Stack
 
 - **Laravel** (backend + authentication)  
 - **Bootstrap** (UI)  
 - **MySQL** (database)  
 - **AWS S3** (image storage)  
-- **Railway** (deployment of Laravel app + MySQL database)
 
 ---
 
-## ✅ 4. Installation / Setup
+## ✅ 5. Installation / Setup
 
 ### Requirements
 - **PHP >= 8.1**
@@ -92,6 +155,11 @@ AWS_SECRET_ACCESS_KEY=your_secret
 AWS_DEFAULT_REGION=your_region
 AWS_BUCKET=your_bucket_name
 ```
+Mailtrap credentials (for dummy email sending): 
+```env
+MAIL_USERNAME=your_sandbox_username
+MAIL_PASSWORD=your_sandbox_password
+```
 
 ### 5. Generate application key
 ```bash
@@ -103,7 +171,7 @@ php artisan key:generate
 php artisan migrate
 ```
 
-### 7. Seed an user (to be able to login -> check DatabaseSeeder file to access/modify credentials)
+### 7. Seed database (to be able to login -> check DatabaseSeeder file to access/modify credentials && create initial values for students and subjects)
 ```bash
 php artisan db:seed
 ```
@@ -120,5 +188,3 @@ php artisan serve
 <img src="Screenshot 2025-11-17 120006.png" width="400">
 <img src="Screenshot 2025-11-17 120102.png" width="400">
 <img src="Screenshot 2025-11-17 120112.png" width="400">
-
-
