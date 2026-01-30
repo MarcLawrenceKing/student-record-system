@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container d-flex flex-column justify-content-center align-items-center pt-5 px-2">
-  <h1 class="pb-3 text-center">Student Record System</h1>
+  <h1 class="pb-3 text-center">Students</h1>
 
   @if($students->isEmpty())
   <!-- Show this if $variable is empty (null, false, "", [], etc.) -->

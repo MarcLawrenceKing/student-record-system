@@ -16,9 +16,18 @@ class GradesSummaryMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(
+        public $student,
+        public $yearSem,
+        public $enrollments,
+        public $average
+    ) {}
+
+    public function build()
     {
-        //
+        return $this
+            ->subject("Grade Summary - {$this->yearSem}")
+            ->view('emails.grades-summary');
     }
 
     /**

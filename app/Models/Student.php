@@ -19,4 +19,12 @@ class Student extends Model
         'course_program',
         'year_level',
         'image',
-    ];}
+    ];
+
+    public function enrollments()
+    {
+        return $this->hasMany(\App\Models\Enrollment::class, 'student_id', 'id');
+    }
+    
+    
+}

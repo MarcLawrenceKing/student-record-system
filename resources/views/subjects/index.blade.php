@@ -31,7 +31,7 @@
         </button>
       </div>
     </form>
-    <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-sm-auto">
+    <!-- <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-sm-auto">
       <a class="btn btn-primary w-100 w-sm-auto" href="/subjects/create"><i class="bi bi-person-plus-fill"></i> Add Subject</a>
       <form id="bulkDeleteForm" action="{{ route('subjects.bulkDelete') }}" method="POST" class="w-100 w-sm-auto">
         @csrf
@@ -41,7 +41,7 @@
           <i class="bi bi-trash"></i> Delete Selected
         </button>
       </form>
-    </div>
+    </div> -->
   </div>
 
   <div class="table-responsive w-100">

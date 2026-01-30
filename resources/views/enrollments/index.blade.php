@@ -32,7 +32,7 @@
       </div>
     </form>
     <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-sm-auto">
-      <a class="btn btn-primary w-100 w-sm-auto" href="/enrollments/create"><i class="bi bi-person-plus-fill"></i> Add enrollment</a>
+      <a class="btn btn-primary w-100 w-sm-auto" href="/enrollments/create"><i class="bi bi-plus-circle-fill"></i> Add enrollment</a>
       <form id="bulkDeleteForm" action="{{ route('enrollments.bulkDelete') }}" method="POST" class="w-100 w-sm-auto">
         @csrf
         @method('DELETE')

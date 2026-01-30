@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\SummaryEmail;
 use App\Models\Enrollment;
-use App\Mail\GradesSummaryMail;
+use App\Mail\StudentGradesMail;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -72,7 +73,7 @@ class SummaryEmailController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Student $student)
+    public function show(SummaryEmail $summary_email)
     {
 
     }
@@ -80,7 +81,7 @@ class SummaryEmailController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Student $student)
+    public function edit(SummaryEmail $summary_email)
     {
 
     }
@@ -88,7 +89,7 @@ class SummaryEmailController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Student $student)
+    public function update(Request $request, SummaryEmail $summary_email)
     {
 
     }
@@ -104,44 +105,55 @@ class SummaryEmailController extends Controller
     public function bulkSend(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids' => 'required|array'
         ]);
 
-        $summaryEmails = SummaryEmail::with('student')
+        // Get the selected summary emails
+        $summaryEmails = SummaryEmail::with('student', 'student.enrollments')
             ->whereIn('id', $request->ids)
-            ->where('subject_with_grades', 5)
-            ->where('sent', false)
             ->get();
 
-        foreach ($summaryEmails as $summary) {
-
-            $student = $summary->student;
-
-            // fetch enrollments with grades
-            $enrollments = Enrollment::with('subject')
-                ->where('student_id', $student->id)
-                ->where('year_sem', $summary->year_sem)
-                ->whereNotNull('grade')
-                ->get();
-
-            if ($enrollments->count() !== 5) {
-                continue; // safety check
-            }
-
-            Mail::to($student->email)->send(
-                new GradesSummaryMail(
-                    student: $student,
-                    yearSem: $summary->year_sem,
-                    enrollments: $enrollments,
-                    average: $summary->average_grades
-                )
-            );
-
-            $summary->update(['sent' => true]);
+        if ($summaryEmails->isEmpty()) {
+            return back()->with('error', 'No summary emails selected.');
         }
 
-        return redirect()
-            ->route('summary_emails.index')
-            ->with('success', 'Emails sent successfully.');
+        // Pre-check: ensure all subjects have at least 5 grades
+        foreach ($summaryEmails as $summaryEmail) {
+            if ($summaryEmail->subject_with_grades < 5) {
+                return back()->with('error', "Student {$summaryEmail->student->full_name} has insufficient subjects with grades.");
+            }
+        }
+
+        $failedEmails = [];
+
+        foreach ($summaryEmails as $summaryEmail) {
+            try {
+                Mail::to($summaryEmail->student->email)->send(
+                    new StudentGradesMail($summaryEmail)
+                );
+
+                // Mark as sent only if mail succeeds
+                $summaryEmail->sent = true;
+                $summaryEmail->save();
+            } catch (\Exception $e) {
+                $failedEmails[] = [
+                    'student' => $summaryEmail->student->full_name ?? $summaryEmail->student->email,
+                    'reason' => $e->getMessage(),
+                ];
+            }
+        }
+
+        if (empty($failedEmails)) {
+            return back()->with('success', 'All emails sent successfully!');
+        }
+
+        $message = count($failedEmails) . ' email(s) failed to send: ';
+        foreach ($failedEmails as $fail) {
+            $message .= "{$fail['student']} ({$fail['reason']}); ";
+        }
+
+        return back()->with('error', $message);
     }
+
+
 }

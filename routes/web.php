@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\EnrollmentController;
@@ -8,8 +9,11 @@ use Illuminate\Support\Facades\Route;
 
 // Redirect guests to login
 Route::get('/', function () {
-    return redirect()->route('login');
-})->middleware('guest');
+    if (auth()->check()) {
+        return redirect()->route('dashboard'); // authenticated users go to dashboard
+    }
+    return redirect()->route('login'); // guests go to login
+});
 
 Route::get('/test-scheme', function (Illuminate\Http\Request $request) {
     return [
@@ -21,6 +25,7 @@ Route::get('/test-scheme', function (Illuminate\Http\Request $request) {
 
 // Authenticated user routes
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
     Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
     Route::post('/students', [StudentController::class, 'store'])->name('students.store');

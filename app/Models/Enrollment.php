@@ -21,4 +21,9 @@ class Enrollment extends Model
     {
         return $this->belongsTo(Student::class, 'student_id', 'id'); ; // 'student_id' is the FK in enrollments table
     }
+
+    public function subject()
+    {
+        return $this->belongsTo(\App\Models\Subject::class, 'subject_code', 'subject_code');
+    }
 }

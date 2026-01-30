@@ -105,17 +105,14 @@ class EnrollmentController extends Controller
         $invalidRecords = [];
 
         while (($row = fgetcsv($handle)) !== false) {
-
-            // Pad the row with nulls if it's shorter than the header
             $row = array_pad($row, count($header), null);
-
             $data = array_combine($header, $row);
 
             $validator = Validator::make($data, [
                 'student_id' => 'required|exists:students,id',
                 'subject_code' => 'required|string|max:255',
                 'year_sem' => 'required|string|max:255',
-                'grade' => 'nullable|string|max:5',
+                'grade' => 'nullable|numeric|min:0|max:100',
             ]);
 
             if ($validator->fails()) {
@@ -124,10 +121,13 @@ class EnrollmentController extends Controller
                     'errors' => $validator->errors()->all(),
                 ];
             } else {
+                // Convert empty string grades to null
+                if ($data['grade'] === '') {
+                    $data['grade'] = null;
+                }
                 $validRecords[] = $data;
             }
         }
-
 
         fclose($handle);
 
